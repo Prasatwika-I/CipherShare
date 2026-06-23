@@ -65,16 +65,7 @@
   background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 35%, #eff6ff 65%, #f8f4ff 100%);
 }
 
-/* Background image overlay */
-.auth-page::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: url('/auth-bg.png') center/cover no-repeat;
-  opacity: 0.35;
-  z-index: 0;
-  pointer-events: none;
-}
+/* Background image overlay removed */
 
 /* Ambient blobs */
 .auth-page::after {

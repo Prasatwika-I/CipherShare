@@ -1,16 +1,73 @@
-# React + Vite
+# CipherShare
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CipherShare is a secure, role-based enterprise file-sharing application designed to provide organizations with a centralized platform for managing and sharing sensitive documents. It ensures that data is only accessible to authorized personnel through strict Role-Based Access Control (RBAC).
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Role-Based Access Control (RBAC)**: Distinct access levels for Admins, Managers, and Employees (Users).
+- **Secure File Management**: Upload, download, and securely share files within the organization.
+- **Admin Command Center**: A comprehensive dashboard for managing users, monitoring system health, and viewing activity logs.
+- **Activity Logging**: Full audit trails for file access, role changes, and system events.
+- **Firebase Integration**: Utilizes Firebase Authentication for secure sign-ins and Firestore for fast, scalable database needs.
 
-## React Compiler
+## 🛠️ Technology Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Frontend:**
+- React (Vite)
+- React Router DOM
+- Context API for state management
+- Vanilla CSS with a modern Glassmorphism UI
 
-## Expanding the ESLint configuration
+**Backend:**
+- Java & Spring Boot
+- Maven Wrapper (`mvnw`)
+- Firebase Admin SDK
+- Embedded Tomcat
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ⚙️ Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- Java 17+
+- A `serviceAccountKey.json` from your Firebase Console.
+
+### Running the Application Locally
+
+The application is split into two parts: the Spring Boot backend and the React frontend.
+
+#### 1. Start the Backend
+
+1. Navigate to the `backend` directory.
+2. Ensure you have your `serviceAccountKey.json` placed in `backend/src/main/resources/`.
+3. Run the application using the Maven Wrapper:
+
+```bash
+cd backend
+.\mvnw spring-boot:run
+```
+*(The backend runs on `http://localhost:8080` or `http://localhost:8081`)*
+
+#### 2. Start the Frontend
+
+1. Navigate to the `frontend` directory.
+2. Install the required Node dependencies.
+3. Start the Vite development server:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+*(The frontend runs on `http://localhost:5173`)*
+
+## 👥 User Roles
+
+- **Admin (👑)**: Full system access. Can approve/reject manager requests, view all activity logs, manage roles, and oversee all files.
+- **Manager (🎯)**: Can upload files, share files with users, manage their team files, and view their specific activity. (Requires admin approval upon registration).
+- **Employee/User (👤)**: Can view and download files that have been specifically shared with them.
+
+## 🔒 Security
+
+- All API routes are secured via Spring Boot and Firebase Auth token validation.
+- Frontend routes are protected using a custom `<ProtectedRoute>` component that verifies roles.

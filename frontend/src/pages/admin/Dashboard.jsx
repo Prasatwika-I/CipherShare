@@ -544,7 +544,6 @@ export default function AdminDashboard() {
                     {[
                       { icon:'👤', label:'Add New User',       to:'/admin/manage-users',   color:'#4f46e5' },
                       { icon:'🔑', label:'Manage Roles',        to:'/admin/role-management', color:'#7c3aed' },
-                      { icon:'🛡️', label:'Access Control',      to:'/admin/access-control',  color:'#2563eb' },
                       { icon:'📁', label:'File Management',     to:'/admin/manage-files',    color:'#059669' },
                       { icon:'📋', label:'Audit Logs',          to:'/admin/view-logs',       color:'#d97706' },
                       { icon:'⚙️', label:'System Settings',     to:'/admin/system-settings', color:'#6b7280' },

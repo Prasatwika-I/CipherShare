@@ -15,7 +15,6 @@ import ManageUsers     from './pages/admin/ManageUsers';
 import ManageFiles     from './pages/admin/ManageFiles';
 import ViewLogs        from './pages/admin/ViewLogs';
 import RoleManagement  from './pages/admin/RoleManagement';
-import AccessControl   from './pages/admin/AccessControl';
 import SystemSettings  from './pages/admin/SystemSettings';
 
 // Manager pages
@@ -53,7 +52,6 @@ export default function App() {
           <Route path="/admin/manage-files"    element={<ProtectedRoute allowedRoles={['admin']}><ManageFiles /></ProtectedRoute>} />
           <Route path="/admin/view-logs"       element={<ProtectedRoute allowedRoles={['admin']}><ViewLogs /></ProtectedRoute>} />
           <Route path="/admin/role-management" element={<ProtectedRoute allowedRoles={['admin']}><RoleManagement /></ProtectedRoute>} />
-          <Route path="/admin/access-control"  element={<ProtectedRoute allowedRoles={['admin']}><AccessControl /></ProtectedRoute>} />
           <Route path="/admin/system-settings" element={<ProtectedRoute allowedRoles={['admin']}><SystemSettings /></ProtectedRoute>} />
 
           {/* Manager routes */}

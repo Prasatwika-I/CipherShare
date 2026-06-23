@@ -6,6 +6,8 @@ import com.ciphershare.dao.UserDAO;
 import com.ciphershare.models.ActivityLog;
 import com.ciphershare.models.FileMetadata;
 import com.ciphershare.models.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserRecord;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -142,6 +144,43 @@ public class AdminController {
             String adminId   = session != null ? (String) session.getAttribute("userId")   : "system";
             String adminName = session != null ? (String) session.getAttribute("userName")  : "System";
             logDAO.log(new ActivityLog(adminId, adminName, "DEACTIVATE_USER", "Deactivated user " + uid));
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * POST /api/admin/invite-user
+     * Creates a new user via Firebase Auth and saves them to Firestore.
+     */
+    @PostMapping("/invite-user")
+    public ResponseEntity<?> inviteUser(@RequestParam String name,
+                                        @RequestParam String email,
+                                        @RequestParam String role,
+                                        @RequestParam(required = false, defaultValue = "General") String department,
+                                        HttpServletRequest request) {
+        try {
+            if (!"employee".equals(role) && !"manager".equals(role) && !"admin".equals(role)) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Invalid role"));
+            }
+
+            UserRecord.CreateRequest req = new UserRecord.CreateRequest()
+                    .setEmail(email)
+                    .setPassword("CipherShare123!") // Default password
+                    .setDisplayName(name);
+            UserRecord userRecord = FirebaseAuth.getInstance().createUser(req);
+
+            User newUser = new User(userRecord.getUid(), name, email, role, department);
+            newUser.setRequestedRole(role);
+            userDAO.createUser(newUser);
+
+            HttpSession session  = request.getSession(false);
+            String adminId   = session != null ? (String) session.getAttribute("userId")   : "system";
+            String adminName = session != null ? (String) session.getAttribute("userName")  : "System";
+            logDAO.log(new ActivityLog(adminId, adminName, "INVITE_USER",
+                "Invited new user " + name + " (" + email + ") as " + role));
+
             return ResponseEntity.ok(Map.of("success", true));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));

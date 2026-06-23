@@ -1,5 +1,9 @@
+# Sensitive credentials — NEVER commit
+**/serviceAccountKey.json
+
+# Maven build output
 backend/target/
-backend/src/main/resources/serviceAccountKey.json
-backend/src/main/webapp/WEB-INF/serviceAccountKey.json
+
+# Node modules
 frontend/node_modules/
 frontend/dist/

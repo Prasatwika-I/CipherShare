@@ -32,6 +32,9 @@ export const approveUser       = (uid, role) =>
 export const deactivateUser    = (uid) =>
   api.post('/admin/deactivate-user', new URLSearchParams({ uid }),
     { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+export const inviteUser        = (name, email, role, department) =>
+  api.post('/admin/invite-user', new URLSearchParams({ name, email, role, department }),
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
 // ────── Manager ───────────────────────────────────────────
 export const getManagerDashboard = () => api.get('/manager/dashboard');

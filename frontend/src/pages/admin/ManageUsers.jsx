@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Alert from '../../components/Alert';
-import { getAdminUsers, updateUserRole, approveUser, deactivateUser } from '../../services/api';
+import { getAdminUsers, updateUserRole, approveUser, deactivateUser, inviteUser } from '../../services/api';
 
 const ROLES = ['employee', 'manager', 'admin'];
 
@@ -21,6 +21,9 @@ export default function ManageUsers() {
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewMode, setViewMode]   = useState('table'); // 'table' | 'card'
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteForm, setInviteForm] = useState({ name: '', email: '', role: 'employee', department: '' });
+  const [inviting, setInviting]     = useState(false);
 
   useEffect(() => {
     getAdminUsers()
@@ -28,6 +31,22 @@ export default function ManageUsers() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const handleInvite = async (e) => {
+    e.preventDefault();
+    setInviting(true);
+    try {
+      await inviteUser(inviteForm.name, inviteForm.email, inviteForm.role, inviteForm.department);
+      setAlert({ type: 'success', message: '✅ User invited! Default password: CipherShare123!' });
+      setShowInvite(false);
+      setInviteForm({ name: '', email: '', role: 'employee', department: '' });
+      getAdminUsers().then(r => setUsers(r.data.users || []));
+    } catch (err) {
+      setAlert({ type: 'error', message: err.response?.data?.error || '❌ Failed to invite user.' });
+    } finally {
+      setInviting(false);
+    }
+  };
 
   const handleRoleUpdate = async (uid, role) => {
     setUpdating(u => ({ ...u, [uid]: true }));
@@ -97,13 +116,50 @@ export default function ManageUsers() {
             <p className="admin-banner-sub">Assign roles, control access, manage all accounts</p>
           </div>
           <div className="admin-banner-right">
-            <button className="btn btn-primary" onClick={() => setAlert({type:'success', message:'✅ User invite feature coming soon!'})}>
+            <button className="btn btn-primary" onClick={() => setShowInvite(true)}>
               <span>➕</span> Invite User
             </button>
           </div>
         </div>
 
         {alert && <Alert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />}
+
+        {/* Invite Modal */}
+        {showInvite && (
+          <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.45)', display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
+            <div style={{ background:'#fff', borderRadius:16, padding:28, maxWidth:420, width:'100%', boxShadow:'0 20px 60px rgba(0,0,0,0.2)', border:'1.5px solid var(--border)', animation:'slideInRight .2s ease' }}>
+              <h3 style={{ fontSize:'1.2rem', fontWeight:800, marginBottom:20, color:'#0f172a' }}>Invite New User</h3>
+              <form onSubmit={handleInvite} style={{ display:'flex', flexDirection:'column', gap:16 }}>
+                <div>
+                  <label style={{ display:'block', fontSize:'.875rem', fontWeight:600, marginBottom:6, color:'#374151' }}>Full Name</label>
+                  <input type="text" required style={{ width:'100%', padding:'10px', borderRadius:8, border:'1.5px solid #e2e8f0', fontFamily:'inherit' }}
+                    value={inviteForm.name} onChange={e => setInviteForm({...inviteForm, name: e.target.value})} />
+                </div>
+                <div>
+                  <label style={{ display:'block', fontSize:'.875rem', fontWeight:600, marginBottom:6, color:'#374151' }}>Email Address</label>
+                  <input type="email" required style={{ width:'100%', padding:'10px', borderRadius:8, border:'1.5px solid #e2e8f0', fontFamily:'inherit' }}
+                    value={inviteForm.email} onChange={e => setInviteForm({...inviteForm, email: e.target.value})} />
+                </div>
+                <div>
+                  <label style={{ display:'block', fontSize:'.875rem', fontWeight:600, marginBottom:6, color:'#374151' }}>Role</label>
+                  <select style={{ width:'100%', padding:'10px', borderRadius:8, border:'1.5px solid #e2e8f0', fontFamily:'inherit' }}
+                    value={inviteForm.role} onChange={e => setInviteForm({...inviteForm, role: e.target.value})}>
+                    {ROLES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase()+r.slice(1)}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display:'block', fontSize:'.875rem', fontWeight:600, marginBottom:6, color:'#374151' }}>Department <span style={{fontWeight:400, color:'#9ca3af'}}>(Optional)</span></label>
+                  <input type="text" style={{ width:'100%', padding:'10px', borderRadius:8, border:'1.5px solid #e2e8f0', fontFamily:'inherit' }}
+                    value={inviteForm.department} onChange={e => setInviteForm({...inviteForm, department: e.target.value})} />
+                </div>
+                <div style={{ display:'flex', gap:10, marginTop:8 }}>
+                  <button type="button" onClick={() => setShowInvite(false)} style={{ flex:1, padding:'10px', borderRadius:8, border:'1.5px solid #e2e8f0', background:'#f9fafb', color:'#374151', fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>Cancel</button>
+                  <button type="submit" disabled={inviting} style={{ flex:1, padding:'10px', borderRadius:8, border:'none', background:'#4f46e5', color:'#fff', fontWeight:700, cursor: inviting ? 'not-allowed' : 'pointer', fontFamily:'inherit' }}>{inviting ? 'Inviting...' : 'Send Invite'}</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Mini Stats */}
         <div className="user-mini-stats">

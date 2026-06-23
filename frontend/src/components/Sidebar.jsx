@@ -8,7 +8,6 @@ const navItems = {
     { to: '/admin/manage-users',    icon: '👥', label: 'User Management'  },
     { to: '/admin/role-management', icon: '🔑', label: 'Role Management'  },
     { to: '/admin/manage-files',    icon: '📁', label: 'File Management'  },
-    { to: '/admin/access-control',  icon: '🛡️', label: 'Access Control'   },
     { to: '/admin/view-logs',       icon: '📋', label: 'Activity Logs'    },
     { to: '/admin/system-settings', icon: '⚙️', label: 'System Settings'  },
   ],
