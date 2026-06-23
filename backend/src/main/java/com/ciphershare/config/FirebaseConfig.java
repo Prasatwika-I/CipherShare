@@ -25,11 +25,21 @@ public class FirebaseConfig {
     public void initFirebase() {
         try {
             if (FirebaseApp.getApps().isEmpty()) {
-                InputStream serviceAccount =
-                    new ClassPathResource("serviceAccountKey.json").getInputStream();
+                GoogleCredentials credentials;
+                String firebaseEnv = System.getenv("FIREBASE_CREDENTIALS");
+                
+                if (firebaseEnv != null && !firebaseEnv.isBlank()) {
+                    // Read from environment variable (production)
+                    InputStream envStream = new java.io.ByteArrayInputStream(firebaseEnv.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    credentials = GoogleCredentials.fromStream(envStream);
+                } else {
+                    // Read from local file (development)
+                    InputStream fileStream = new ClassPathResource("serviceAccountKey.json").getInputStream();
+                    credentials = GoogleCredentials.fromStream(fileStream);
+                }
 
                 FirebaseOptions.Builder builder = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount));
+                    .setCredentials(credentials);
 
                 // Set storage bucket if configured
                 if (storageBucket != null && !storageBucket.isBlank()) {
