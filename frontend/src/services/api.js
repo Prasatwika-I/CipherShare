@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Axios instance — uses Vite proxy to forward /api → Spring Boot:8080
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://ciphershare-backend.onrender.com/api',
   withCredentials: true,          // Send session cookies
   headers: { 'Content-Type': 'application/json' },
 });
