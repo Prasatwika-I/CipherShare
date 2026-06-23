@@ -1,22 +1,16 @@
 # Stage 1: Build the application
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy the Maven wrapper and project configuration
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-
-# Grant execution permissions to the Maven wrapper
-RUN chmod +x mvnw
-
-# Download dependencies offline to cache them
-RUN ./mvnw dependency:go-offline
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
 # Copy the application source code
 COPY src ./src
 
 # Build the application (skipping tests for faster deployment)
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Stage 2: Run the application
 FROM eclipse-temurin:17-jre-jammy
