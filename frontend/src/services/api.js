@@ -113,7 +113,7 @@ export const getFileActivity = () => api.get('/file/activity');
  * - If the file has a Firebase Storage URL it will be returned from the server.
  * - Otherwise the Spring Boot /api/file/download endpoint streams from disk.
  */
-export const downloadFileUrl = (fileId) => `/api/file/download?fileId=${fileId}`;
+export const downloadFileUrl = (fileId) => `https://ciphershare-backend.onrender.com/api/file/download?fileId=${fileId}`;
 
 export const getFileMetadata = (fileId) => api.get('/file/metadata', { params: { fileId } });
 
