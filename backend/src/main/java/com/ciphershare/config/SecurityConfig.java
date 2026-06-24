@@ -45,6 +45,26 @@ public class SecurityConfig {
             boolean authenticated = session != null && session.getAttribute("userId") != null;
 
             if (!authenticated) {
+                String token = request.getParameter("token");
+                if (token != null && !token.isBlank()) {
+                    try {
+                        com.google.firebase.auth.FirebaseToken decoded = com.google.firebase.auth.FirebaseAuth.getInstance().verifyIdToken(token);
+                        com.ciphershare.models.User user = new com.ciphershare.dao.UserDAO().getUserById(decoded.getUid());
+                        if (user != null && user.isActive()) {
+                            session = request.getSession(true);
+                            session.setAttribute("userId", user.getUid());
+                            session.setAttribute("userName", user.getName());
+                            session.setAttribute("userEmail", user.getEmail());
+                            session.setAttribute("userRole", user.getRole());
+                            authenticated = true;
+                        }
+                    } catch (Exception e) {
+                        // ignore token validation errors and fall through
+                    }
+                }
+            }
+
+            if (!authenticated) {
                 sendJson(response, 401, "{\"error\":\"Unauthorized - please login\"}");
                 return;
             }

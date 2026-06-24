@@ -48,15 +48,19 @@ export default function SecureViewer() {
         // If it's a text or CSV file, fetch content to render securely inline
         const type = res.data.fileType || '';
         if (type.startsWith('text/') || type === 'application/json') {
-          axios
-            .get(downloadFileUrl(fileId) + '&mode=view', { withCredentials: true })
-            .then((contentRes) => {
-              const data = typeof contentRes.data === 'object'
-                ? JSON.stringify(contentRes.data, null, 2)
-                : contentRes.data;
-              setTextCont(data);
-            })
-            .catch(() => setTextCont('Failed to load text preview content.'));
+          import('../../firebase/config').then(({ auth }) => {
+            auth.currentUser?.getIdToken().then(token => {
+              axios
+                .get(`https://ciphershare-backend.onrender.com/api/file/download?fileId=${fileId}&mode=view&token=${token}`, { withCredentials: true })
+                .then((contentRes) => {
+                  const data = typeof contentRes.data === 'object'
+                    ? JSON.stringify(contentRes.data, null, 2)
+                    : contentRes.data;
+                  setTextCont(data);
+                })
+                .catch(() => setTextCont('Failed to load text preview content.'));
+            });
+          });
         }
       })
       .catch((err) => {
@@ -64,6 +68,17 @@ export default function SecureViewer() {
       })
       .finally(() => setLoading(false));
   }, [fileId]);
+
+  const [secureUrl, setSecureUrl] = useState('');
+  useEffect(() => {
+    if (file) {
+      import('../../firebase/config').then(({ auth }) => {
+        auth.currentUser?.getIdToken().then(token => {
+          setSecureUrl(`https://ciphershare-backend.onrender.com/api/file/download?fileId=${file.fileId}&token=${token}`);
+        });
+      });
+    }
+  }, [file]);
 
   const clearClipboardWithWarning = () => {
     const warningText = `[SECURE PREVIEW] Screenshots are restricted. Confidential document: ${file?.fileName || 'CipherShare Document'}.`;
@@ -320,7 +335,7 @@ export default function SecureViewer() {
         <div className="viewer-actions">
           {file?.canDownload ? (
             <a
-              href={downloadFileUrl(file.fileId) + '&mode=download'}
+              href={secureUrl ? secureUrl + '&mode=download' : '#'}
               download={file.fileName}
               onClick={handleDownload}
               className="mgr-btn-primary"
@@ -369,7 +384,7 @@ export default function SecureViewer() {
         <div className={`document-preview-viewport${blurred ? ' blurred-content' : ''}`}>
           {isImage ? (
             <img
-              src={downloadFileUrl(file.fileId) + '&mode=view'}
+              src={secureUrl ? secureUrl + '&mode=view' : ''}
               alt={file.fileName}
               className="protected-image-preview"
               onDragStart={(e) => e.preventDefault()}
@@ -381,7 +396,7 @@ export default function SecureViewer() {
               {/* Cover transparent overlay to catch click events and block selection/printing inside PDF iframe */}
               <div className="iframe-secure-overlay" />
               <iframe
-                src={downloadFileUrl(file.fileId) + '&mode=view#toolbar=0&navpanes=0'}
+                src={secureUrl ? secureUrl + '&mode=view#toolbar=0&navpanes=0' : ''}
                 title="PDF Preview"
                 width="100%"
                 height="100%"
@@ -400,7 +415,7 @@ export default function SecureViewer() {
               </p>
               {file?.canDownload && (
                 <a
-                  href={downloadFileUrl(file.fileId) + '&mode=download'}
+                  href={secureUrl ? secureUrl + '&mode=download' : '#'}
                   download={file.fileName}
                   onClick={handleDownload}
                   className="mgr-btn-primary"
