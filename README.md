@@ -1,27 +1,30 @@
 # CipherShare
 
-CipherShare is a secure, role-based enterprise file-sharing application designed to provide organizations with a centralized platform for managing and sharing sensitive documents. It ensures that data is only accessible to authorized personnel through strict Role-Based Access Control (RBAC).
+**Live Production Link:** [https://cipher-share-system.vercel.app/](https://cipher-share-system.vercel.app/)
+
+CipherShare is a secure, role-based enterprise file-sharing application designed to provide organizations with a centralized platform for managing and sharing sensitive documents. It ensures that data is only accessible to authorized personnel through strict Role-Based Access Control (RBAC) and includes advanced anti-theft measures like a Secure Document Viewer that blocks screenshots, printing, and clipboard copying.
 
 ## 🚀 Features
 
+- **Advanced Secure Viewer**: Documents can be viewed inline with automated protection against screenshots, downloading, and clipboard copying. The viewer hides documents if the browser loses focus.
 - **Role-Based Access Control (RBAC)**: Distinct access levels for Admins, Managers, and Employees (Users).
 - **Secure File Management**: Upload, download, and securely share files within the organization.
-- **Admin Command Center**: A comprehensive dashboard for managing users, monitoring system health, and viewing activity logs.
-- **Activity Logging**: Full audit trails for file access, role changes, and system events.
-- **Firebase Integration**: Utilizes Firebase Authentication for secure sign-ins and Firestore for fast, scalable database needs.
+- **Admin Command Center**: A comprehensive dashboard for managing users, approving manager accounts, monitoring system health, and viewing activity logs.
+- **Activity Logging**: Full audit trails for file access, role changes, and system events (including screenshot attempts).
+- **Firebase Integration**: Utilizes Firebase Authentication for secure JWT sign-ins and Firestore for fast, scalable database needs.
 
 ## 🛠️ Technology Stack
 
 **Frontend:**
-- React (Vite)
+- React (Vite) hosted on **Vercel**
 - React Router DOM
 - Context API for state management
 - Vanilla CSS with a modern Glassmorphism UI
 
 **Backend:**
-- Java & Spring Boot
+- Java & Spring Boot hosted on **Render**
 - Maven Wrapper (`mvnw`)
-- Firebase Admin SDK
+- Firebase Admin SDK for JWT Verification
 - Embedded Tomcat
 
 ## ⚙️ Getting Started
@@ -70,4 +73,5 @@ npm run dev
 ## 🔒 Security
 
 - All API routes are secured via Spring Boot and Firebase Auth token validation.
+- Cross-origin file streaming is secured using dynamic JWT query parameters to bypass strict browser third-party cookie blocking.
 - Frontend routes are protected using a custom `<ProtectedRoute>` component that verifies roles.
