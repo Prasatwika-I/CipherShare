@@ -16,7 +16,7 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
-    public CorsFilter corsFilter() {
+    public org.springframework.boot.web.servlet.FilterRegistrationBean<CorsFilter> corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         // Use patterns to allow any frontend deployment URL (Vercel, Netlify, etc.) while keeping credentials enabled
         config.setAllowedOriginPatterns(List.of("*"));
@@ -26,8 +26,12 @@ public class CorsConfig {
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        // Register for all paths so that Spring's internal /error endpoint also gets CORS headers!
+        source.registerCorsConfiguration("/**", config);
 
-        return new CorsFilter(source);
+        org.springframework.boot.web.servlet.FilterRegistrationBean<CorsFilter> bean = 
+                new org.springframework.boot.web.servlet.FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(org.springframework.core.Ordered.HIGHEST_PRECEDENCE);
+        return bean;
     }
 }
