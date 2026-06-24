@@ -258,9 +258,15 @@ export default function ManageUsers() {
                         <td className="text-secondary">{u.email}</td>
                         <td className="text-secondary">{u.department || '—'}</td>
                         <td>
-                          <span className="admin-role-badge" style={{background:m.bg, color:m.color, border:`1px solid ${m.border}`}}>
-                            {m.icon} {m.label}
-                          </span>
+                          {!u.active && u.requestedRole ? (
+                            <span className="admin-role-badge" style={{background:'#fef3c7', color:'#d97706', border:'1px solid #fde68a'}}>
+                              ⏳ Req: {u.requestedRole.charAt(0).toUpperCase() + u.requestedRole.slice(1)}
+                            </span>
+                          ) : (
+                            <span className="admin-role-badge" style={{background:m.bg, color:m.color, border:`1px solid ${m.border}`}}>
+                              {m.icon} {m.label}
+                            </span>
+                          )}
                         </td>
                         <td>
                           <span className={`admin-status-badge ${u.active ? 'active' : 'inactive'}`}>
@@ -344,9 +350,15 @@ export default function ManageUsers() {
                     <div className="uc-body">
                       <div className="uc-name">{u.name}</div>
                       <div className="uc-email">{u.email}</div>
-                      <span className="admin-role-badge" style={{background:m.bg,color:m.color,border:`1px solid ${m.border}`,marginTop:8,display:'inline-flex'}}>
-                        {m.icon} {m.label}
-                      </span>
+                      {!u.active && u.requestedRole ? (
+                        <span className="admin-role-badge" style={{background:'#fef3c7', color:'#d97706', border:'1px solid #fde68a', marginTop:8, display:'inline-flex'}}>
+                          ⏳ Req: {u.requestedRole.charAt(0).toUpperCase() + u.requestedRole.slice(1)}
+                        </span>
+                      ) : (
+                        <span className="admin-role-badge" style={{background:m.bg,color:m.color,border:`1px solid ${m.border}`,marginTop:8,display:'inline-flex'}}>
+                          {m.icon} {m.label}
+                        </span>
+                      )}
                       <div className="uc-dept">{u.department || 'No Department'}</div>
                     </div>
                     <div className="uc-footer">
